@@ -261,6 +261,14 @@ echo "Installing rpi-serial-console script"
 wget -q https://raw.githubusercontent.com/lurch/rpi-serial-console/master/rpi-serial-console -O usr/local/bin/rpi-serial-console
 chmod +x usr/local/bin/rpi-serial-console
 
+# install swift
+curl -s https://packagecloud.io/install/repositories/swift-arm/dev-builds/script.deb.sh | sudo bash
+sed s/debian/ubuntu/g /etc/apt/sources.list.d/swift-arm_dev-builds.list 1<> /etc/apt/sources.list.d/swift-arm_dev-builds.list
+sed s/stretch/xenial/g /etc/apt/sources.list.d/swift-arm_dev-builds.list > /etc/apt/sources.list.d/swift-arm_dev-builds.list.tmp
+mv /etc/apt/sources.list.d/swift-arm_dev-builds.list.tmp /etc/apt/sources.list.d/swift-arm_dev-builds.list
+apt-get update
+apt-get -o Dpkg::Options::="--force-overwrite" install -y --allow-unauthenticated swift5dev=5.0
+
 # cleanup APT cache and lists
 apt-get clean
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
