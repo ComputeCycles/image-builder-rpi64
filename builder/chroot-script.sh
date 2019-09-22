@@ -166,6 +166,15 @@ start_x=0
 gpu_mem=16
 " >> boot/config.txt
 
+# set up a E3372 modem
+tee /etc/udev/rules.d/10-HuaweiFlashCard.rules << EOF
+SUBSYSTEMS=="usb", \
+    ATTRS{idVendor}=="12d1", \
+    ATTRS{idProduct}=="1f01", \
+    SYMLINK+="hwcdrom", \
+    RUN+="/usr/bin/sg_raw /dev/hwcdrom 11 06 20 00 00 00 00 00 01 00" 
+EOF
+
 # # /etc/modules
 # echo "snd_bcm2835
 # " >> /etc/modules
@@ -212,6 +221,7 @@ apt-get install -y \
 apt-get install -y \
   --no-install-recommends \
   cloud-init \
+  cloud-initramfs-growroot \
   dirmngr \
   less
 
@@ -271,6 +281,14 @@ pip install docker-compose=="${DOCKER_COMPOSE_VERSION}"
 
 # install bash completion for Docker Compose
 curl -sSL "https://raw.githubusercontent.com/docker/compose/${DOCKER_COMPOSE_VERSION}/contrib/completion/bash/docker-compose" -o /etc/bash_completion.d/docker-compose
+
+echo "installing playspot base"
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+apt-get install -y sg3-utils unattended-upgrades dphys-swapfile dhcpcd5 emacs25-nox dnsmasq hostapd sg3-utils openvpn ufw libudev-dev libusb-dev udev unattended-upgrades apt-listchanges pass usb-modeswitch usb-modeswitch-data traceroute
+apt-get update
+apt-get upgrade -y
+apt-get autoremove
+apt-get autoclean
 
 echo "Installing rpi-serial-console script"
 wget -q https://raw.githubusercontent.com/lurch/rpi-serial-console/master/rpi-serial-console -O usr/local/bin/rpi-serial-console
